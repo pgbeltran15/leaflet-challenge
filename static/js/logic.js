@@ -1,5 +1,54 @@
 var base_url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
 
+function markerSize(magnitude) {
+    return magnitude * 4;
+};
+
+var earthquakes = new L.LayerGroup();
+
+d3.json(base_url, function (geoJson) {
+    L.geoJSON(geoJson.features, {
+        pointToLayer: function (geoJson, latlng) {
+            return L.circleMarker(latlng, { radius: markerSize(geoJson.properties.mag) });
+        },
+
+        style: function (Earthquake) {
+            return {
+                fillColor: Color(Earthquake.properties.mag),
+                fillOpacity: 0.7,
+                weight: 0.1,
+                color: 'black'
+
+            }
+        },
+
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(
+                "<h4 style='text-align:center;'>" + new Date(feature.properties.time) +
+                "</h4> <hr> <h5 style='text-align:center;'>" + feature.properties.title + "</h5>");
+        }
+    }).addTo(earthquakes);
+    createMap(earthquakes);
+});
+
+
+
+function Color(magnitude) {
+    if (magnitude > 5) {
+        return 'red'
+    } else if (magnitude > 4) {
+        return 'darkorange'
+    } else if (magnitude > 3) {
+        return 'tan'
+    } else if (magnitude > 2) {
+        return 'yellow'
+    } else if (magnitude > 1) {
+        return 'darkgreen'
+    } else {
+        return 'lightgreen'
+    }
+};
+
 function createMap() {
 
     var streetMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
@@ -46,5 +95,4 @@ function createMap() {
     });
 
     L.control.layers(baseLayers, overlays).addTo(myMap);
-    
 }
