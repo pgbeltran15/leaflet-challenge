@@ -39,7 +39,7 @@ function Color(magnitude) {
     } else if (magnitude > 4) {
         return 'darkorange'
     } else if (magnitude > 3) {
-        return 'tan'
+        return 'orange'
     } else if (magnitude > 2) {
         return 'yellow'
     } else if (magnitude > 1) {
