@@ -7,14 +7,16 @@ function markerSize(magnitude) {
 var earthquakes = new L.LayerGroup();
 
 d3.json(base_url, function (geoJson) {
+    console.log(geoJson)
     L.geoJSON(geoJson.features, {
         pointToLayer: function (geoJson, latlng) {
             return L.circleMarker(latlng, { radius: markerSize(geoJson.properties.mag) });
         },
 
         style: function (Earthquake) {
+            Earthquake_depth = Earthquake.geometry.coordinates[2]
             return {
-                fillColor: Color(Earthquake.properties.mag),
+                fillColor: Color(Earthquake_depth),
                 fillOpacity: 0.7,
                 weight: 0.1,
                 color: 'black'
@@ -33,16 +35,16 @@ d3.json(base_url, function (geoJson) {
 
 
 
-function Color(magnitude) {
-    if (magnitude > 5) {
+function Color(depth) {
+    if (depth > 90) {
         return 'red'
-    } else if (magnitude > 4) {
+    } else if (depth > 70) {
         return 'darkorange'
-    } else if (magnitude > 3) {
+    } else if (depth > 50) {
         return 'orange'
-    } else if (magnitude > 2) {
+    } else if (depth > 30) {
         return 'yellow'
-    } else if (magnitude > 1) {
+    } else if (depth > 10) {
         return 'darkgreen'
     } else {
         return 'lightgreen'
@@ -100,14 +102,14 @@ function createMap() {
     var legend = L.control({ position: "bottomright" });
     legend.onAdd = function() {
         var div = L.DomUtil.create("div", "info legend"), 
-        magnitudeLevels = [0, 1, 2, 3, 4, 5];
+        depthLevels = [-10, 10, 30, 50, 70, 90];
 
         div.innerHTML += "<h3>Magnitude</h3>"
 
-        for (var i = 0; i < magnitudeLevels.length; i++) {
+        for (var i = 0; i < depthLevels.length; i++) {
             div.innerHTML +=
-                '<i style="background: ' + Color(magnitudeLevels[i] + 1) + '"></i> ' +
-                magnitudeLevels[i] + (magnitudeLevels[i + 1] ? '&ndash;' + magnitudeLevels[i + 1] + '<br>' : '+');
+                '<i style="background: ' + Color(depthLevels[i] + 1) + '"></i> ' +
+                depthLevels[i] + (depthLevels[i + 1] ? '&ndash;' + depthLevels[i + 1] + '<br>' : '+');
         }
         return div;
     };
